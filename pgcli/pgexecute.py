@@ -4,7 +4,7 @@ import psycopg2
 import psycopg2.extras
 import psycopg2.extensions as ext
 import sqlparse
-from .packages import pgspecial as special
+import pgspecial as special
 from .encodingutils import unicode2utf8, PY2, utf8tounicode
 import click
 

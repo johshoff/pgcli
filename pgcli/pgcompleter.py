@@ -2,10 +2,12 @@ from __future__ import print_function, unicode_literals
 import logging
 import re
 import itertools
+
+from pgspecial.namedqueries import NamedQueries
 from prompt_toolkit.completion import Completer, Completion
 from .packages.sqlcompletion import suggest_type
 from .packages.parseutils import last_word
-from .packages.pgspecial.namedqueries import namedqueries
+from .config import load_config
 
 try:
     from collections import Counter
@@ -14,6 +16,9 @@ except ImportError:
     from .packages.counter import Counter
 
 _logger = logging.getLogger(__name__)
+
+NamedQueries.instance = NamedQueries.from_config(load_config('~/.pgclirc'))
+
 
 class PGCompleter(Completer):
     keywords = ['ACCESS', 'ADD', 'ALL', 'ALTER TABLE', 'AND', 'ANY', 'AS',
@@ -377,9 +382,9 @@ class PGCompleter(Completer):
                     completions.extend(types)
 
             elif suggestion['type'] == 'namedquery':
-                queries = self.find_matches(word_before_cursor, namedqueries.list(),
-                                            start_only=False, fuzzy=True,
-                                            meta='named query')
+                queries = self.find_matches(
+                    word_before_cursor, NamedQueries.instance.list(),
+                    start_only=False, fuzzy=True, meta='named query')
                 completions.extend(queries)
 
         return completions
